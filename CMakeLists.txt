@@ -11,6 +11,20 @@ target_sources(${PROJECT_NAME}
 
 add_subdirectory(logging)
 
+# Add include directories for the logging library
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        logging/inc
+)
+
+target_compile_options(${PROJECT_NAME}
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Werror
+)
+
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         logging

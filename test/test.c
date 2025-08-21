@@ -1,11 +1,21 @@
 // test application to make use of the logging library
 #include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
 
 #include "logging.h"
+#include "logging_levels.h"
+#include "logging_stack.h"
+
 // define logging function
 static int custom_log_function(const char *message, ...)
 {
-    printf("Custom Log: %s\n", message, __VA_ARGS__);
+    va_list args;
+    va_start(args, message);
+    
+    vprintf(message, args);
+    
+    va_end(args);
     return 0;
 }
 

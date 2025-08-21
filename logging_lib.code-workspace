@@ -5,6 +5,11 @@
 		}
 	],
 	"settings": {
-		"cmake.useCMakePresets": "never"
+		"cmake.useCMakePresets": "never",
+		"files.associations": {
+			"logging.h": "c",
+			"stdarg.h": "c",
+			"logging_stack.h": "c"
+		}
 	}
 }

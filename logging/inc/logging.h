@@ -9,11 +9,19 @@
 
 #include "logging_cfg.h"
 #include "logging_levels.h"
-#include "logging_transport.h"
+#include "logging_stack.h"
 
-typedef (int (*Logging_Function_t)(const char *message, ...));
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+typedef int (*Logging_Function_t)(const char *message, ...);
 
 void Logging_Init( int logging_level,  Logging_Function_t log_func );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* LOGGING_H */
 
