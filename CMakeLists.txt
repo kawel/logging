@@ -2,13 +2,6 @@ cmake_minimum_required(VERSION 3.25.0)
 
 project(logging_test)
 
-# Define logging configuration for the entire project
-add_compile_definitions(
-    LIBRARY_LOG_LEVEL=LOG_DEBUG
-    LIBRARY_LOG_NAME="LOGGING_TEST"
-    LIBRARY_PRINT_FILE_PATH
-)
-
 add_executable(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
@@ -16,9 +9,23 @@ target_sources(${PROJECT_NAME}
         test/test.c
 )
 
-add_subdirectory(logging)
 
-# Add include directories for the logging library
+
+# Alternative approach - target-specific definitions
+# target_compile_definitions(logging
+#     PRIVATE
+#         LIBRARY_LOG_LEVEL=LOG_INFO
+#         LIBRARY_LOG_NAME="LOGGING_LIB"
+#         LIBRARY_PRINT_FILE_PATH
+# )
+
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+        LIBRARY_LOG_LEVEL=LOG_WARN
+        LIBRARY_LOG_NAME="LOGGING_TEST"
+        LIBRARY_PRINT_FILE_PATH
+)
+
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         logging/inc
@@ -36,3 +43,7 @@ target_link_libraries(${PROJECT_NAME}
     PRIVATE
         logging
 )
+
+add_subdirectory(logging)
+
+# czy to jest włąściwa struktura cmakelists
