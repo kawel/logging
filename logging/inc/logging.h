@@ -7,7 +7,8 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include "logging_cfg.h"
+#include <stdarg.h>
+
 #include "logging_levels.h"
 #include "logging_stack.h"
 

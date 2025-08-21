@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.25.0)
 
 project(logging_test)
 
+# Define logging configuration for the entire project
+add_compile_definitions(
+    LIBRARY_LOG_LEVEL=LOG_DEBUG
+    LIBRARY_LOG_NAME="LOGGING_TEST"
+    LIBRARY_PRINT_FILE_PATH
+)
+
 add_executable(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}

@@ -12,7 +12,7 @@ static int custom_log_function(const char *message, ...)
 {
     va_list args;
     va_start(args, message);
-    
+
     vprintf(message, args);
     
     va_end(args);
@@ -29,7 +29,7 @@ int main(void)
     LogWarn("This is a warning message with some details %s", "additional info");
     LogDebug("This is a debug message with int: %d", 42);
     LogDebug("This is a debug message with float: %f", 3.14);
-    LogDebug("This is a debug message with hex: %x", 0xDEAD);
-    
+    LogDebug("This is a debug message with hex: 0x%x", 0xDEAD);
+
     return 0;
 }

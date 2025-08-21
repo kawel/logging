@@ -77,6 +77,8 @@
 #endif
 #endif
 
+extern int (*log_function)(const char *message, ...);
+
 /**
  * @brief Common macro that maps all the logging interfaces,
  * (#LogDebug, #LogInfo, #LogWarn, #LogError) to the platform-specific logging

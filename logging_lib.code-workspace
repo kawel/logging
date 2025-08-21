@@ -9,7 +9,8 @@
 		"files.associations": {
 			"logging.h": "c",
 			"stdarg.h": "c",
-			"logging_stack.h": "c"
+			"logging_stack.h": "c",
+			"logging_levels.h": "c"
 		}
 	}
 }
