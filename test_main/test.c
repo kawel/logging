@@ -23,6 +23,7 @@ int main(void)
 {
     Logging_Init(custom_log_function);
 
+    printf("Logging Library Version: %s\n", Logging_GetVersion());
     printf("Main Application Log:\n");
 
     LogInfo("This is an info message in function %s", __func__);

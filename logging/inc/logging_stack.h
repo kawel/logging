@@ -102,4 +102,4 @@ extern int (*log_function)(const char *message, ...);
 
 #endif
 
-#endif /* ifndef LOGGING_STACK_H */
+#endif /* LOGGING_STACK_H */
