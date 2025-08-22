@@ -40,7 +40,9 @@
 #define LOGGING_STRINGIZE2(x) #x
 #define LOGGING_LINE_STRING LOGGING_STRINGIZE(__LINE__)
 
-/* Macro to extract just the filename from __FILE__ */
+/* Macro to extract just the filename from __FILE__ - NOT USED in pure compile-time approach
+ * Kept for reference but removed from implementation for maximum embedded performance
+ */
 #ifdef _WIN32
     #define LOGGING_FILENAME (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 #else
@@ -63,41 +65,26 @@
 #define FILE_NAME "" 
 #endif
 
-/* Simplified macros for compile-time string concatenation */
+/* Pure compile-time string concatenation for maximum embedded performance */
 #ifdef LIBRARY_LOG_NAME
     #ifdef LIBRARY_PRINT_FILE_PATH
-        #define LOG_METADATA "[" LIBRARY_LOG_NAME "] (" __FILE__ ") "
-    #elif defined(LIBRARY_PRINT_FILENAME_ONLY)
-        /* Note: For true compile-time concatenation, we'll use runtime formatting for LOGGING_FILENAME */
-        #define LOG_METADATA_FMT "[" LIBRARY_LOG_NAME "] (%s) "
-        #define LOG_METADATA_ARG , LOGGING_FILENAME
+        #define LOG_PREFIX "[" LIBRARY_LOG_NAME "] (" __FILE__ ") "
     #else
-        #define LOG_METADATA "[" LIBRARY_LOG_NAME "] "
+        #define LOG_PREFIX "[" LIBRARY_LOG_NAME "] "
     #endif
 #else
     #ifdef LIBRARY_PRINT_FILE_PATH
-        #define LOG_METADATA "(" __FILE__ ") "
-    #elif defined(LIBRARY_PRINT_FILENAME_ONLY)
-        #define LOG_METADATA_FMT "(%s) "
-        #define LOG_METADATA_ARG , LOGGING_FILENAME
+        #define LOG_PREFIX "(" __FILE__ ") "
     #else
-        #define LOG_METADATA ""
+        #define LOG_PREFIX ""
     #endif
-#endif
-
-/* Handle cases where we don't have format strings */
-#ifndef LOG_METADATA_FMT
-    #define LOG_METADATA_FMT LOG_METADATA
-    #define LOG_METADATA_ARG
 #endif
 
 /* Function name support - optional for embedded systems */
 #ifdef LIBRARY_PRINT_FUNCTION_NAME
-    #define FUNCTION_INFO_FMT "(%s):%s - "
-    #define FUNCTION_INFO_ARG , __func__, LOGGING_LINE_STRING
+    #define FUNCTION_SUFFIX "(" __func__ "):" LOGGING_LINE_STRING " - "
 #else
-    #define FUNCTION_INFO_FMT ":%s - "
-    #define FUNCTION_INFO_ARG , LOGGING_LINE_STRING
+    #define FUNCTION_SUFFIX ":" LOGGING_LINE_STRING " - "
 #endif
 
 extern int (*log_function)(const char *message, ...);
@@ -131,28 +118,28 @@ extern int (*log_function)(const char *message, ...);
 #else
 #if LIBRARY_LOG_LEVEL == LOG_DEBUG
 /* All log level messages will logged. */
-#define LogError(message, ...) SdkLog("[ERROR] " LOG_METADATA_FMT FUNCTION_INFO_FMT message "\r\n" LOG_METADATA_ARG FUNCTION_INFO_ARG, ##__VA_ARGS__)
-#define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_METADATA_FMT FUNCTION_INFO_FMT message "\r\n" LOG_METADATA_ARG FUNCTION_INFO_ARG, ##__VA_ARGS__)
-#define LogInfo(message, ...)  SdkLog("[INFO]  " LOG_METADATA_FMT FUNCTION_INFO_FMT message "\r\n" LOG_METADATA_ARG FUNCTION_INFO_ARG, ##__VA_ARGS__)
-#define LogDebug(message, ...) SdkLog("[DEBUG] " LOG_METADATA_FMT FUNCTION_INFO_FMT message "\r\n" LOG_METADATA_ARG FUNCTION_INFO_ARG, ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogInfo(message, ...)  SdkLog("[INFO]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogDebug(message, ...) SdkLog("[DEBUG] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 
 #elif LIBRARY_LOG_LEVEL == LOG_INFO
 /* Only INFO, WARNING and ERROR messages will be logged. */
-#define LogError(message, ...) SdkLog("[ERROR] " LOG_METADATA_FMT FUNCTION_INFO_FMT message "\r\n" LOG_METADATA_ARG FUNCTION_INFO_ARG, ##__VA_ARGS__)
-#define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_METADATA_FMT FUNCTION_INFO_FMT message "\r\n" LOG_METADATA_ARG FUNCTION_INFO_ARG, ##__VA_ARGS__)
-#define LogInfo(message, ...)  SdkLog("[INFO]  " LOG_METADATA_FMT FUNCTION_INFO_FMT message "\r\n" LOG_METADATA_ARG FUNCTION_INFO_ARG, ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogInfo(message, ...)  SdkLog("[INFO]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogDebug(message, ...)
 
 #elif LIBRARY_LOG_LEVEL == LOG_WARN
 /* Only WARNING and ERROR messages will be logged.*/
-#define LogError(message, ...) SdkLog("[ERROR] " LOG_METADATA_FMT FUNCTION_INFO_FMT message "\r\n" LOG_METADATA_ARG FUNCTION_INFO_ARG, ##__VA_ARGS__)
-#define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_METADATA_FMT FUNCTION_INFO_FMT message "\r\n" LOG_METADATA_ARG FUNCTION_INFO_ARG, ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)
 
 #elif LIBRARY_LOG_LEVEL == LOG_ERROR
 /* Only ERROR messages will be logged. */
-#define LogError(message, ...) SdkLog("[ERROR] " LOG_METADATA_FMT FUNCTION_INFO_FMT message "\r\n" LOG_METADATA_ARG FUNCTION_INFO_ARG, ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogWarn(message, ...)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)

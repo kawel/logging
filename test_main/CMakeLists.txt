@@ -20,5 +20,5 @@ target_link_libraries(${PROJECT_NAME}
 # Application-specific logging configuration
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
-        LIBRARY_LOG_NAME="[TEST_APP]"   # Custom name for test app
+        LIBRARY_LOG_NAME="TEST_APP"   # Custom name for test app
 )
