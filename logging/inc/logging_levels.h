@@ -39,7 +39,7 @@
  * @section logging_constants_levels Log levels
  * @brief Log levels for the libraries in this SDK.
  *
- * Each library should specify a log level by setting @ref LIBRARY_LOG_LEVEL.
+ * Each library should specify a log level by setting @ref LOGGING_TOP_LOG_LEVEL.
  * All log messages with a level at or below the specified level will be printed
  * for that library.
  *
@@ -59,7 +59,7 @@
 /**
  * @brief No log messages.
  *
- * When @ref LIBRARY_LOG_LEVEL is #LOG_NONE, logging is disabled and no
+ * When @ref LOGGING_TOP_LOG_LEVEL is #LOG_NONE, logging is disabled and no
  * logging messages are printed.
  */
 #define LOG_NONE     0
@@ -70,7 +70,7 @@
  * These messages describe the situations when a library encounters an error from
  * which it cannot recover.
  *
- * These messages are printed when @ref LIBRARY_LOG_LEVEL is defined as either
+ * These messages are printed when @ref LOGGING_TOP_LOG_LEVEL is defined as either
  * of #LOG_ERROR, #LOG_WARN, #LOG_INFO or #LOG_DEBUG.
  */
 #define LOG_ERROR    1
@@ -82,7 +82,7 @@
  * abnormal event that may be indicative of an error. Libraries continue
  * execution after logging a warning.
  *
- * These messages are printed when @ref LIBRARY_LOG_LEVEL is defined as either
+ * These messages are printed when @ref LOGGING_TOP_LOG_LEVEL is defined as either
  * of #LOG_WARN, #LOG_INFO or #LOG_DEBUG.
  */
 #define LOG_WARN     2
@@ -93,7 +93,7 @@
  * These messages describe normal execution of a library. They provide
  * the progress of the program at a coarse-grained level.
  *
- * These messages are printed when @ref LIBRARY_LOG_LEVEL is defined as either
+ * These messages are printed when @ref LOGGING_TOP_LOG_LEVEL is defined as either
  * of #LOG_INFO or #LOG_DEBUG.
  */
 #define LOG_INFO     3
@@ -106,7 +106,7 @@
  * for debugging and may contain excessive information such as internal
  * variables, buffers, or other specific information.
  *
- * These messages are only printed when @ref LIBRARY_LOG_LEVEL is defined as
+ * These messages are only printed when @ref LOGGING_TOP_LOG_LEVEL is defined as
  * #LOG_DEBUG.
  */
 #define LOG_DEBUG    4

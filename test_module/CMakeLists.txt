@@ -24,6 +24,6 @@ target_link_libraries(${PROJECT_NAME}
 # Application-specific logging configuration
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
-        LIBRARY_LOG_NAME="TEST_MODULE"   # Custom name for test module
-        # LIBRARY_LOG_LEVEL=LOG_INFO       # Custom log level for test module
+        LOGGING_LOG_NAME="TEST_MODULE"   # Custom name for test module
+        # LOGGING_TOP_LOG_LEVEL=LOG_INFO       # Custom log level for test module
 )

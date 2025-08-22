@@ -34,19 +34,19 @@ The logging system is configured through CMake definitions in your `CMakeLists.t
 # Global logging configuration - applies to all targets
 add_compile_definitions(
     # File path options (choose one or leave commented):
-    LIBRARY_PRINT_FILE_PATH          # Full file path (compile-time safe)
+    LOGGING_PRINT_FILE_PATH          # Full file path (compile-time safe)
     # (no option)                    # No file path information (most embedded-friendly)
     
     # Function name support (optional - requires C99+ __func__ support)
-    LIBRARY_PRINT_FUNCTION_NAME      # Add function names to log messages
+    LOGGING_PRINT_FUNCTION_NAME      # Add function names to log messages
     
-    LIBRARY_LOG_LEVEL=LOG_DEBUG      # Project-wide default log level
+    LOGGING_TOP_LOG_LEVEL=LOG_DEBUG      # Project-wide default log level
 )
 
 # Target-specific configuration (overrides global settings)
 target_compile_definitions(my_app
     PRIVATE
-        LIBRARY_LOG_NAME="[MY_APP]"   # Custom name for this target
+        LOGGING_LOG_NAME="[MY_APP]"   # Custom name for this target
 )
 ```
 
@@ -54,23 +54,23 @@ target_compile_definitions(my_app
 
 #### File Path Display (Compile-Time Safe Options Only)
 Choose one of these options:
-- **`LIBRARY_PRINT_FILE_PATH`** - Shows full file path using `__FILE__` macro
+- **`LOGGING_PRINT_FILE_PATH`** - Shows full file path using `__FILE__` macro
 - **No option** - No file information displayed (**most embedded-friendly**)
 
 > **Note**: The previous `LIBRARY_PRINT_FILENAME_ONLY` option has been removed as it required runtime function calls (`strrchr()`), which conflicts with our zero-overhead embedded design philosophy.
 
 #### Function Name Display
-- **`LIBRARY_PRINT_FUNCTION_NAME`** - Adds function names to log messages (requires C99+ `__func__` support)
+- **`LOGGING_PRINT_FUNCTION_NAME`** - Adds function names to log messages (requires C99+ `__func__` support)
 
 #### Log Level Control
-- **`LIBRARY_LOG_LEVEL=LOG_DEBUG`** - All messages (ERROR, WARN, INFO, DEBUG)
-- **`LIBRARY_LOG_LEVEL=LOG_INFO`** - INFO and above (ERROR, WARN, INFO)
-- **`LIBRARY_LOG_LEVEL=LOG_WARN`** - WARN and above (ERROR, WARN)
-- **`LIBRARY_LOG_LEVEL=LOG_ERROR`** - ERROR only
-- **`LIBRARY_LOG_LEVEL=LOG_NONE`** - No logging
+- **`LOGGING_TOP_LOG_LEVEL=LOG_DEBUG`** - All messages (ERROR, WARN, INFO, DEBUG)
+- **`LOGGING_TOP_LOG_LEVEL=LOG_INFO`** - INFO and above (ERROR, WARN, INFO)
+- **`LOGGING_TOP_LOG_LEVEL=LOG_WARN`** - WARN and above (ERROR, WARN)
+- **`LOGGING_TOP_LOG_LEVEL=LOG_ERROR`** - ERROR only
+- **`LOGGING_TOP_LOG_LEVEL=LOG_NONE`** - No logging
 
 #### Module/Library Name
-- **`LIBRARY_LOG_NAME="[MODULE_NAME]"`** - Custom identifier for log messages
+- **`LOGGING_LOG_NAME="[MODULE_NAME]"`** - Custom identifier for log messages
 
 ## Performance Characteristics
 
@@ -125,9 +125,9 @@ The output format depends on the configuration macros. Here are examples for dif
 
 ### Configuration 1: With Library Name, No File Path
 ```cpp
-#define LIBRARY_LOG_NAME "MyModule"
-#define LIBRARY_LOG_LEVEL LOG_DEBUG
-// LIBRARY_PRINT_FILE_PATH not defined
+#define LOGGING_LOG_NAME "MyModule"
+#define LOGGING_TOP_LOG_LEVEL LOG_DEBUG
+// LOGGING_PRINT_FILE_PATH not defined
 ```
 
 ### Logging Macros
@@ -151,11 +151,11 @@ The output format depends on your configuration. Here are examples for different
 ### Configuration 1: Full File Path + Function Names (Full Debug Mode)
 ```cmake
 add_compile_definitions(
-    LIBRARY_PRINT_FILE_PATH
-    LIBRARY_PRINT_FUNCTION_NAME
-    LIBRARY_LOG_LEVEL=LOG_DEBUG
+    LOGGING_PRINT_FILE_PATH
+    LOGGING_PRINT_FUNCTION_NAME
+    LOGGING_TOP_LOG_LEVEL=LOG_DEBUG
 )
-target_compile_definitions(my_app PRIVATE LIBRARY_LOG_NAME="[APP]")
+target_compile_definitions(my_app PRIVATE LOGGING_LOG_NAME="[APP]")
 ```
 
 **Output:**
@@ -169,10 +169,10 @@ target_compile_definitions(my_app PRIVATE LIBRARY_LOG_NAME="[APP]")
 ### Configuration 2: Minimal Embedded-Friendly (Recommended for Production)
 ```cmake
 add_compile_definitions(
-    LIBRARY_LOG_LEVEL=LOG_INFO  # Skip debug messages
+    LOGGING_TOP_LOG_LEVEL=LOG_INFO  # Skip debug messages
     # No file paths or function names for minimal overhead
 )
-target_compile_definitions(my_app PRIVATE LIBRARY_LOG_NAME="[APP]")
+target_compile_definitions(my_app PRIVATE LOGGING_LOG_NAME="[APP]")
 ```
 
 **Output:**
@@ -185,24 +185,24 @@ target_compile_definitions(my_app PRIVATE LIBRARY_LOG_NAME="[APP]")
 ### Configuration 3: Development Mode with Function Names
 ```cmake
 add_compile_definitions(
-    LIBRARY_PRINT_FUNCTION_NAME  # Add function context
-    LIBRARY_LOG_LEVEL=LOG_DEBUG
+    LOGGING_PRINT_FUNCTION_NAME  # Add function context
+    LOGGING_TOP_LOG_LEVEL=LOG_DEBUG
 )
-target_compile_definitions(my_app PRIVATE LIBRARY_LOG_NAME="[APP]")
+target_compile_definitions(my_app PRIVATE LOGGING_LOG_NAME="[APP]")
 ```
 
 ### Configuration 4: Different Modules
 ```cmake
 # Global settings
 add_compile_definitions(
-    LIBRARY_PRINT_FUNCTION_NAME
-    LIBRARY_LOG_LEVEL=LOG_DEBUG
+    LOGGING_PRINT_FUNCTION_NAME
+    LOGGING_TOP_LOG_LEVEL=LOG_DEBUG
 )
 
 # Different names for different modules
-target_compile_definitions(audio_module PRIVATE LIBRARY_LOG_NAME="[AUDIO]")
-target_compile_definitions(network_module PRIVATE LIBRARY_LOG_NAME="[NET]")
-target_compile_definitions(main_app PRIVATE LIBRARY_LOG_NAME="[APP]")
+target_compile_definitions(audio_module PRIVATE LOGGING_LOG_NAME="[AUDIO]")
+target_compile_definitions(network_module PRIVATE LOGGING_LOG_NAME="[NET]")
+target_compile_definitions(main_app PRIVATE LOGGING_LOG_NAME="[APP]")
 ```
 
 **Output from different modules:**
@@ -218,19 +218,19 @@ target_compile_definitions(main_app PRIVATE LIBRARY_LOG_NAME="[APP]")
 For systems with severe memory constraints:
 ```cmake
 add_compile_definitions(
-    LIBRARY_LOG_LEVEL=LOG_ERROR  # Only critical errors
+    LOGGING_TOP_LOG_LEVEL=LOG_ERROR  # Only critical errors
     # No file paths or function names
 )
-# Consider disabling logging entirely in production: LIBRARY_LOG_LEVEL=LOG_NONE
+# Consider disabling logging entirely in production: LOGGING_TOP_LOG_LEVEL=LOG_NONE
 ```
 
 ### Development/Debug Configuration
 For development and testing:
 ```cmake
 add_compile_definitions(
-    LIBRARY_PRINT_FILE_PATH
-    LIBRARY_PRINT_FUNCTION_NAME
-    LIBRARY_LOG_LEVEL=LOG_DEBUG
+    LOGGING_PRINT_FILE_PATH
+    LOGGING_PRINT_FUNCTION_NAME
+    LOGGING_TOP_LOG_LEVEL=LOG_DEBUG
 )
 ```
 
@@ -238,8 +238,8 @@ add_compile_definitions(
 Balanced approach for production embedded systems:
 ```cmake
 add_compile_definitions(
-    LIBRARY_PRINT_FUNCTION_NAME  # Helpful for field debugging
-    LIBRARY_LOG_LEVEL=LOG_WARN   # Warnings and errors only
+    LOGGING_PRINT_FUNCTION_NAME  # Helpful for field debugging
+    LOGGING_TOP_LOG_LEVEL=LOG_WARN   # Warnings and errors only
 )
 ```
 
@@ -310,9 +310,9 @@ project(my_project)
 
 # Global logging settings
 add_compile_definitions(
-    LIBRARY_PRINT_FILE_PATH        # Or leave commented for minimal embedded build
-    LIBRARY_PRINT_FUNCTION_NAME    # Optional for embedded systems
-    LIBRARY_LOG_LEVEL=LOG_DEBUG
+    LOGGING_PRINT_FILE_PATH        # Or leave commented for minimal embedded build
+    LOGGING_PRINT_FUNCTION_NAME    # Optional for embedded systems
+    LOGGING_TOP_LOG_LEVEL=LOG_DEBUG
 )
 
 # Add subdirectories
@@ -326,12 +326,12 @@ add_subdirectory(audio_module)
 # src/CMakeLists.txt
 add_executable(main main.c)
 target_link_libraries(main PRIVATE logging)
-target_compile_definitions(main PRIVATE LIBRARY_LOG_NAME="[MAIN]")
+target_compile_definitions(main PRIVATE LOGGING_LOG_NAME="[MAIN]")
 
 # audio_module/CMakeLists.txt  
 add_library(audio audio.c)
 target_link_libraries(audio PUBLIC logging)
-target_compile_definitions(audio PUBLIC LIBRARY_LOG_NAME="[AUDIO]")
+target_compile_definitions(audio PUBLIC LOGGING_LOG_NAME="[AUDIO]")
 ```
 
 ## Best Practices
@@ -360,9 +360,9 @@ LogDebug("Buffer state: used=%d/%d bytes (%.1f%%)", used, total, percentage);
 
 ### 5. Use Meaningful Module Names
 ```cmake
-target_compile_definitions(network PRIVATE LIBRARY_LOG_NAME="[NET]")
-target_compile_definitions(audio PRIVATE LIBRARY_LOG_NAME="[AUDIO]")
-target_compile_definitions(storage PRIVATE LIBRARY_LOG_NAME="[STORAGE]")
+target_compile_definitions(network PRIVATE LOGGING_LOG_NAME="[NET]")
+target_compile_definitions(audio PRIVATE LOGGING_LOG_NAME="[AUDIO]")
+target_compile_definitions(storage PRIVATE LOGGING_LOG_NAME="[STORAGE]")
 ```
 
 ### 6. Embedded-Specific Considerations
@@ -452,15 +452,15 @@ This logging system uses **pure compile-time string concatenation**, providing:
 - **Higher log levels generate more output** and impact performance
 - **Use conditional compilation** for performance-critical code:
   ```c
-  #if LIBRARY_LOG_LEVEL >= LOG_DEBUG
+  #if LOGGING_TOP_LOG_LEVEL >= LOG_DEBUG
   LogDebug("Expensive debug operation: result=%d", expensive_calculation());
   #endif
   ```
 - **Consider flash/ROM usage** with extensive logging
 - **Test real-time behavior** with logging enabled
-- **Use `DISABLE_LOGGING`** to completely disable all logging for ultra-minimal builds:
+- **Use `LOGGING_DISABLED_GLOBALLY`** to completely disable all logging for ultra-minimal builds:
   ```cmake
-  add_compile_definitions(DISABLE_LOGGING)
+  add_compile_definitions(LOGGING_DISABLED_GLOBALLY)
   ```
 
 #### Memory Usage Comparison
@@ -503,7 +503,7 @@ static int thread_safe_log_function(const char *message, ...)
 ### Common Issues
 
 1. **"LogXXX function not found" errors**
-   - Ensure `LIBRARY_LOG_LEVEL` is defined
+   - Ensure `LOGGING_TOP_LOG_LEVEL` is defined
    - Check that you're including `logging.h`
    - Verify CMake definitions are applied correctly
 

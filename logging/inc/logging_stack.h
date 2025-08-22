@@ -59,21 +59,21 @@
  * Refer to #LOG_METADATA_FORMAT for the complete format of the metadata prefix in
  * log messages.
  */
-/* Check if LIBRARY_LOG_NAME macro has been defined. */
+/* Check if LOGGING_LOG_NAME macro has been defined. */
 
 #ifndef FILE_NAME
 #define FILE_NAME "" 
 #endif
 
 /* Pure compile-time string concatenation for maximum embedded performance */
-#ifdef LIBRARY_LOG_NAME
-    #ifdef LIBRARY_PRINT_FILE_PATH
-        #define LOG_PREFIX "[" LIBRARY_LOG_NAME "] (" __FILE__ ") "
+#ifdef LOGGING_LOG_NAME
+    #ifdef LOGGING_PRINT_FILE_PATH
+        #define LOG_PREFIX "[" LOGGING_LOG_NAME "] (" __FILE__ ") "
     #else
-        #define LOG_PREFIX "[" LIBRARY_LOG_NAME "] "
+        #define LOG_PREFIX "[" LOGGING_LOG_NAME "] "
     #endif
 #else
-    #ifdef LIBRARY_PRINT_FILE_PATH
+    #ifdef LOGGING_PRINT_FILE_PATH
         #define LOG_PREFIX "(" __FILE__ ") "
     #else
         #define LOG_PREFIX ""
@@ -81,7 +81,7 @@
 #endif
 
 /* Function name support - optional for embedded systems */
-#ifdef LIBRARY_PRINT_FUNCTION_NAME
+#ifdef LOGGING_PRINT_FUNCTION_NAME
     #define FUNCTION_SUFFIX "(" __func__ "):" LOGGING_LINE_STRING " - "
 #else
     #define FUNCTION_SUFFIX ":" LOGGING_LINE_STRING " - "
@@ -97,7 +97,7 @@ extern int (*log_function)(const char *message, ...);
  * @note The default definition of the macro is an empty definition that does not
  * generate any logging.
  */
-#if !defined( DISABLE_LOGGING )
+#if !defined( LOGGING_DISABLED_GLOBALLY )
     #define SdkLog( message, ...)  log_function(message, ##__VA_ARGS__)
 #else
     #define SdkLog( message, ...)
@@ -107,51 +107,51 @@ extern int (*log_function)(const char *message, ...);
  * Disable definition of logging interface macros when generating doxygen output,
  * to avoid conflict with documentation of macros at the end of the file.
  */
-/* Check that LIBRARY_LOG_LEVEL is defined and has a valid value. */
-#if !defined(LIBRARY_LOG_LEVEL) ||       \
-    ((LIBRARY_LOG_LEVEL != LOG_NONE) &&  \
-     (LIBRARY_LOG_LEVEL != LOG_ERROR) && \
-     (LIBRARY_LOG_LEVEL != LOG_WARN) &&  \
-     (LIBRARY_LOG_LEVEL != LOG_INFO) &&  \
-     (LIBRARY_LOG_LEVEL != LOG_DEBUG))
-#error "Please define LIBRARY_LOG_LEVEL as either LOG_NONE, LOG_ERROR, LOG_WARN, LOG_INFO, or LOG_DEBUG."
+/* Check that LOGGING_TOP_LOG_LEVEL is defined and has a valid value. */
+#if !defined(LOGGING_TOP_LOG_LEVEL) ||       \
+    ((LOGGING_TOP_LOG_LEVEL != LOG_NONE) &&  \
+     (LOGGING_TOP_LOG_LEVEL != LOG_ERROR) && \
+     (LOGGING_TOP_LOG_LEVEL != LOG_WARN) &&  \
+     (LOGGING_TOP_LOG_LEVEL != LOG_INFO) &&  \
+     (LOGGING_TOP_LOG_LEVEL != LOG_DEBUG))
+#error "Please define LOGGING_TOP_LOG_LEVEL as either LOG_NONE, LOG_ERROR, LOG_WARN, LOG_INFO, or LOG_DEBUG."
 #else
-#if LIBRARY_LOG_LEVEL == LOG_DEBUG
+#if LOGGING_TOP_LOG_LEVEL == LOG_DEBUG
 /* All log level messages will logged. */
 #define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogInfo(message, ...)  SdkLog("[INFO]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogDebug(message, ...) SdkLog("[DEBUG] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 
-#elif LIBRARY_LOG_LEVEL == LOG_INFO
+#elif LOGGING_TOP_LOG_LEVEL == LOG_INFO
 /* Only INFO, WARNING and ERROR messages will be logged. */
 #define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogInfo(message, ...)  SdkLog("[INFO]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogDebug(message, ...)
 
-#elif LIBRARY_LOG_LEVEL == LOG_WARN
+#elif LOGGING_TOP_LOG_LEVEL == LOG_WARN
 /* Only WARNING and ERROR messages will be logged.*/
 #define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)
 
-#elif LIBRARY_LOG_LEVEL == LOG_ERROR
+#elif LOGGING_TOP_LOG_LEVEL == LOG_ERROR
 /* Only ERROR messages will be logged. */
 #define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 #define LogWarn(message, ...)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)
 
-#else /* if LIBRARY_LOG_LEVEL == LOG_ERROR */
+#else /* if LOGGING_TOP_LOG_LEVEL == LOG_ERROR */
 
 #define LogError(message, ...)
 #define LogWarn(message, ...)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)
 
-#endif /* if LIBRARY_LOG_LEVEL == LOG_ERROR */
-#endif /* if !defined( LIBRARY_LOG_LEVEL ) || ( ( LIBRARY_LOG_LEVEL != LOG_NONE ) && ( LIBRARY_LOG_LEVEL != LOG_ERROR ) && ( LIBRARY_LOG_LEVEL != LOG_WARN ) && ( LIBRARY_LOG_LEVEL != LOG_INFO ) && ( LIBRARY_LOG_LEVEL != LOG_DEBUG ) ) */
+#endif /* if LOGGING_TOP_LOG_LEVEL == LOG_ERROR */
+#endif /* if !defined( LOGGING_TOP_LOG_LEVEL ) || ( ( LOGGING_TOP_LOG_LEVEL != LOG_NONE ) && ( LOGGING_TOP_LOG_LEVEL != LOG_ERROR ) && ( LOGGING_TOP_LOG_LEVEL != LOG_WARN ) && ( LOGGING_TOP_LOG_LEVEL != LOG_INFO ) && ( LOGGING_TOP_LOG_LEVEL != LOG_DEBUG ) ) */
 
 #endif /* ifndef LOGGING_STACK_H */

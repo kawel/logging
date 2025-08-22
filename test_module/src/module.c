@@ -18,7 +18,7 @@ static int custom_log_function(const char *message, ...)
 
 void testfunction(void)
 {
-    Logging_Init(LOG_DEBUG, custom_log_function);
+    Logging_Init(custom_log_function);
     // Test function implementation
 
     printf("Module Test Log:\n");

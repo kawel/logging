@@ -22,7 +22,7 @@ int main(void)
     
     Logging_Init(LOG_DEBUG, custom_log_function);
 
-    printf("1. With LIBRARY_PRINT_FILENAME_ONLY + LIBRARY_PRINT_FUNCTION_NAME:\n");
+    printf("1. With LIBRARY_PRINT_FILENAME_ONLY + LOGGING_PRINT_FUNCTION_NAME:\n");
     LogInfo("This is an info message");
     LogError("This is an error message");
     LogWarn("This is a warning message with details: %s", "extra info");

@@ -17,13 +17,13 @@ add_compile_options(
 # Global logging configuration - common settings
 add_compile_definitions(
     # File path options (choose one or leave commented for no file info):
-    # LIBRARY_PRINT_FILE_PATH           # Full file path (compile-time safe)
-    # (no option)                       # No file path information
+    # LOGGING_PRINT_FILE_PATH           # Full file path (compile-time safe)
+    # LOGGING_DISABLED_GLOBALLY
     
     # Function name support (optional - requires C99+ __func__ support)
-    # LIBRARY_PRINT_FUNCTION_NAME       # Add function names to log messages
+    # LOGGING_PRINT_FUNCTION_NAME       # Add function names to log messages
     
-    LIBRARY_LOG_LEVEL=LOG_DEBUG         # Project-wide default
+    LOGGING_TOP_LOG_LEVEL=LOG_DEBUG         # Project-wide default
 )
 
 # Add subdirectories in dependency order
