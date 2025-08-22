@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the high-performance logging system for embedded applications, based on FreeRTOS logging framework. The system provides four levels of logging with **pure compile-time string concatenation** for maximum embedded performance, configurable output formats, and customizable log transport mechanisms.
+This document describes the high-performance logging system for embedded applications, based on [FreeRTOS logging framework](https://www.freertos.org/logging.html). The system provides four levels of logging with **pure compile-time string concatenation** for maximum embedded performance, configurable output formats, and customizable log transport mechanisms.
 
 ## Key Features
 
@@ -57,10 +57,10 @@ Choose one of these options:
 - **`LOGGING_PRINT_FILE_PATH`** - Shows full file path using `__FILE__` macro
 - **No option** - No file information displayed (**most embedded-friendly**)
 
-> **Note**: The previous `LIBRARY_PRINT_FILENAME_ONLY` option has been removed as it required runtime function calls (`strrchr()`), which conflicts with our zero-overhead embedded design philosophy.
-
 #### Function Name Display
 - **`LOGGING_PRINT_FUNCTION_NAME`** - Adds function names to log messages (requires C99+ `__func__` support)
+  - **Performance optimized**: Function name passed as separate argument (no runtime string concatenation)
+  - **Zero overhead when disabled**: Pure compile-time string concatenation
 
 #### Log Level Control
 - **`LOGGING_TOP_LOG_LEVEL=LOG_DEBUG`** - All messages (ERROR, WARN, INFO, DEBUG)
@@ -74,24 +74,39 @@ Choose one of these options:
 
 ## Performance Characteristics
 
-### Compile-Time String Concatenation
+### Compile-Time String Concatenation vs Argument Passing
+
+#### Without Function Names (Pure Compile-Time):
 ```c
 // Your code:
 LogInfo("Temperature: %d°C", temp);
 
 // Becomes at compile-time (zero overhead):
 log_function("[INFO] [SENSOR] :42 - Temperature: %d°C\r\n", temp);
+// Stack usage: ~12 bytes (1 format string + 1 user arg)
+```
+
+#### With Function Names (Optimized Argument Passing):
+```c
+// Your code:
+LogInfo("Temperature: %d°C", temp);
+
+// Becomes at compile-time (optimized):
+log_function("[INFO] [SENSOR] (%s):42 - Temperature: %d°C\r\n", __func__, temp);
+// Stack usage: ~16 bytes (1 format string + 1 func arg + 1 user arg)
 
 // NOT like traditional format-string loggers (with runtime overhead):
-// log_function("[INFO] %s%s:%s - Temperature: %d°C\r\n", "[SENSOR] ", "", "42", temp);
+// log_function("[INFO] %s%s:%s - Temperature: %d°C\r\n", "[SENSOR] ", __func__, "42", temp);
+// Stack usage: ~24+ bytes (1 format string + 4+ args)
 ```
 
 ### Embedded Performance Benefits
 - **Code Size**: ~50-70% smaller than format-string approaches
-- **RAM Usage**: ~80% less stack usage (single string literal + user args)
-- **Execution Speed**: 5-10x faster (direct string output)
+- **RAM Usage**: Minimal stack usage (1-2 args vs 4+ args in traditional loggers)
+- **Execution Speed**: 5-10x faster (direct string output, minimal argument passing)
 - **Deterministic**: Always same execution time (critical for real-time systems)
 - **Flash/ROM Friendly**: String literals stored in ROM, not RAM
+- **Function Name Efficiency**: When enabled, passed as single argument (no concatenation)
 
 ## API Usage
 
@@ -111,7 +126,7 @@ static int custom_log_function(const char *message, ...)
 
 int main(void) {
     // Initialize the logging system
-    Logging_Init(LOG_DEBUG, custom_log_function);
+    Logging_Init(custom_log_function);
     
     // Now you can use logging macros
     LogInfo("Application started");
@@ -128,6 +143,7 @@ The output format depends on the configuration macros. Here are examples for dif
 #define LOGGING_LOG_NAME "MyModule"
 #define LOGGING_TOP_LOG_LEVEL LOG_DEBUG
 // LOGGING_PRINT_FILE_PATH not defined
+// LOGGING_PRINT_FUNCTION_NAME not defined
 ```
 
 ### Logging Macros
@@ -166,7 +182,27 @@ target_compile_definitions(my_app PRIVATE LOGGING_LOG_NAME="[APP]")
 [DEBUG] [APP] (/home/user/project/src/main.c) (main):45 - Processing packet: size=128, type=0x5A
 ```
 
-### Configuration 2: Minimal Embedded-Friendly (Recommended for Production)
+### Configuration 2: Function Names Only (Optimized Debug Mode)
+```cmake
+add_compile_definitions(
+    LOGGING_PRINT_FUNCTION_NAME     # Function names with optimized argument passing
+    LOGGING_TOP_LOG_LEVEL=LOG_DEBUG
+    # No file paths for cleaner output
+)
+target_compile_definitions(my_app PRIVATE LOGGING_LOG_NAME="[APP]")
+```
+
+**Output:**
+```
+[ERROR] [APP] (main):42 - Failed to initialize component 1
+[WARN]  [APP] (main):43 - Buffer usage at 85% capacity
+[INFO]  [APP] (main):44 - System initialized successfully
+[DEBUG] [APP] (process_data):45 - Processing packet: size=128, type=0x5A
+```
+
+**Performance Note**: Function names are passed as separate arguments (not concatenated), maintaining excellent performance while providing debugging context.
+
+### Configuration 3: Minimal Embedded-Friendly (Recommended for Production)
 ```cmake
 add_compile_definitions(
     LOGGING_TOP_LOG_LEVEL=LOG_INFO  # Skip debug messages
@@ -242,6 +278,33 @@ add_compile_definitions(
     LOGGING_TOP_LOG_LEVEL=LOG_WARN   # Warnings and errors only
 )
 ```
+
+## Function Name Performance Optimization
+
+### Zero-Overhead Mode (LOGGING_PRINT_FUNCTION_NAME undefined)
+```c
+LogInfo("Processing data");
+// Expands to: log_function("[INFO] [MODULE] :42 - Processing data\r\n");
+// Stack usage: ~8 bytes (format string pointer)
+// Execution: Direct string output - fastest possible
+```
+
+### Optimized Function Name Mode (LOGGING_PRINT_FUNCTION_NAME defined)
+```c
+LogInfo("Processing data");
+// Expands to: log_function("[INFO] [MODULE] (%s):42 - Processing data\r\n", __func__);
+// Stack usage: ~12 bytes (format string pointer + function name pointer)
+// Execution: Single %s format specifier - still very fast
+```
+
+### Performance Comparison
+| Mode | Stack Usage | Execution Speed | Use Case |
+|------|------------|----------------|----------|
+| **Zero-overhead** | ~8 bytes | Fastest | Production embedded |
+| **Function names** | ~12 bytes | Very fast | Development/debugging |
+| **Traditional logger** | ~24+ bytes | Slow | Avoid in embedded |
+
+**Key Advantage**: Function names are passed as separate arguments, not concatenated at runtime. This maintains excellent performance while providing debugging context when needed.
 
 ## Log Level Behavior
 
@@ -465,15 +528,25 @@ This logging system uses **pure compile-time string concatenation**, providing:
 
 #### Memory Usage Comparison
 ```c
-// This logging system (compile-time concatenation):
+// This logging system - WITHOUT function names (zero overhead):
 LogInfo("Sensor %d: temp=%d°C", id, temp);
 // → Generates: log_function("[INFO] [SENSOR] :42 - Sensor %d: temp=%d°C\r\n", id, temp);
-// Stack usage: ~8-12 bytes (function call + 2 args)
+// Stack usage: ~12 bytes (format string + 2 user args)
 
-// Traditional format-string logger:
+// This logging system - WITH function names (optimized):
+LogInfo("Sensor %d: temp=%d°C", id, temp);
+// → Generates: log_function("[INFO] [SENSOR] (%s):42 - Sensor %d: temp=%d°C\r\n", __func__, id, temp);
+// Stack usage: ~16 bytes (format string + 1 func arg + 2 user args)
+
+// Traditional format-string logger (avoid):
 // → Would generate: log_function("[INFO] %s%s:%s - Sensor %d: temp=%d°C\r\n", "[SENSOR] ", "", "42", id, temp);
-// Stack usage: ~20-32 bytes (function call + 5 args)
+// Stack usage: ~24+ bytes (format string + 5+ args)
 ```
+
+#### Function Name Performance
+- **Disabled** (`LOGGING_PRINT_FUNCTION_NAME` undefined): Pure compile-time concatenation, zero overhead
+- **Enabled** (`LOGGING_PRINT_FUNCTION_NAME` defined): Function name passed as single argument, minimal overhead
+- **No runtime string concatenation**: Unlike traditional loggers, function names are never concatenated at runtime
 
 ### Thread Safety
 
@@ -520,7 +593,4 @@ static int thread_safe_log_function(const char *message, ...)
    - Definitions must be set before `add_subdirectory()`
    - Use `target_compile_definitions()` for target-specific settings
 
----
 
-*Updated on August 22, 2025*  
-*Based on logging system v2.0 with CMake integration*

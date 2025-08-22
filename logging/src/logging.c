@@ -1,9 +1,10 @@
-
-/*
- * Copyright 2025 Merit Automotive Electronic Systems S.L.U., All rights reserved
- * It is not allowed to reproduce or utilize parts of this document in any form or by any means, including
- * photocopying and microfilm, without permission in written by Merit Automotive Electronic Systems.
+/**
+ * @file: com.c
+ * @author:: Paweł Kawula (pawel.kawula@kelectronics.pl)
+ * -----
+ * Copyright 2025 - KElectronics
  */
+
 #include <stdarg.h>
 #include <stddef.h>
 
@@ -28,4 +29,9 @@ void Logging_Init(Logging_Function_t log_func)
     {
         log_function = default_log_function;
     }
+}
+
+const char *Logging_GetVersion(void)
+{
+    return LOGGING_VERSION;
 }

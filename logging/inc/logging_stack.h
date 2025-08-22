@@ -44,9 +44,9 @@
  * Kept for reference but removed from implementation for maximum embedded performance
  */
 #ifdef _WIN32
-    #define LOGGING_FILENAME (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+#define LOGGING_FILENAME (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 #else
-    #define LOGGING_FILENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define LOGGING_FILENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 #endif
 
 /**
@@ -62,29 +62,40 @@
 /* Check if LOGGING_LOG_NAME macro has been defined. */
 
 #ifndef FILE_NAME
-#define FILE_NAME "" 
+#define FILE_NAME ""
 #endif
 
 /* Pure compile-time string concatenation for maximum embedded performance */
 #ifdef LOGGING_LOG_NAME
-    #ifdef LOGGING_PRINT_FILE_PATH
-        #define LOG_PREFIX "[" LOGGING_LOG_NAME "] (" __FILE__ ") "
-    #else
-        #define LOG_PREFIX "[" LOGGING_LOG_NAME "] "
-    #endif
+#ifdef LOGGING_PRINT_FILE_PATH
+#define LOG_PREFIX "[" LOGGING_LOG_NAME "] (" __FILE__ ") "
 #else
-    #ifdef LOGGING_PRINT_FILE_PATH
-        #define LOG_PREFIX "(" __FILE__ ") "
-    #else
-        #define LOG_PREFIX ""
-    #endif
+#define LOG_PREFIX "[" LOGGING_LOG_NAME "] "
+#endif
+#else
+#ifdef LOGGING_PRINT_FILE_PATH
+#define LOG_PREFIX "(" __FILE__ ") "
+#else
+#define LOG_PREFIX ""
+#endif
 #endif
 
-/* Function name support - optional for embedded systems */
+/* Compile-time suffix when function names are NOT used */
+#define LOG_SUFFIX ":" LOGGING_LINE_STRING " - "
+
+/* Macro helpers for function name handling */
 #ifdef LOGGING_PRINT_FUNCTION_NAME
-    #define FUNCTION_SUFFIX "(" __func__ "):" LOGGING_LINE_STRING " - "
+/* Pass function name as separate argument to avoid runtime concatenation */
+#define LOG_WITH_FUNC(level, message, ...) \
+    SdkLog(level LOG_PREFIX "(%s)" LOG_SUFFIX message "\r\n", __func__, ##__VA_ARGS__)
+#define LOG_WITHOUT_FUNC(level, message, ...) \
+    LOG_WITH_FUNC(level, message, ##__VA_ARGS__)
 #else
-    #define FUNCTION_SUFFIX ":" LOGGING_LINE_STRING " - "
+/* Pure compile-time concatenation when no function names */
+#define LOG_WITH_FUNC(level, message, ...) \
+    SdkLog(level LOG_PREFIX LOG_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LOG_WITHOUT_FUNC(level, message, ...) \
+    LOG_WITH_FUNC(level, message, ##__VA_ARGS__)
 #endif
 
 extern int (*log_function)(const char *message, ...);
@@ -97,10 +108,10 @@ extern int (*log_function)(const char *message, ...);
  * @note The default definition of the macro is an empty definition that does not
  * generate any logging.
  */
-#if !defined( LOGGING_DISABLED_GLOBALLY )
-    #define SdkLog( message, ...)  log_function(message, ##__VA_ARGS__)
+#if !defined(LOGGING_DISABLED_GLOBALLY)
+#define SdkLog(message, ...) log_function(message, ##__VA_ARGS__)
 #else
-    #define SdkLog( message, ...)
+#define SdkLog(message, ...)
 #endif
 
 /**
@@ -118,28 +129,28 @@ extern int (*log_function)(const char *message, ...);
 #else
 #if LOGGING_TOP_LOG_LEVEL == LOG_DEBUG
 /* All log level messages will logged. */
-#define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
-#define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
-#define LogInfo(message, ...)  SdkLog("[INFO]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
-#define LogDebug(message, ...) SdkLog("[DEBUG] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogError(message, ...) LOG_WITH_FUNC("[ERROR] ", message, ##__VA_ARGS__)
+#define LogWarn(message, ...) LOG_WITH_FUNC("[WARN]  ", message, ##__VA_ARGS__)
+#define LogInfo(message, ...) LOG_WITH_FUNC("[INFO]  ", message, ##__VA_ARGS__)
+#define LogDebug(message, ...) LOG_WITH_FUNC("[DEBUG] ", message, ##__VA_ARGS__)
 
 #elif LOGGING_TOP_LOG_LEVEL == LOG_INFO
 /* Only INFO, WARNING and ERROR messages will be logged. */
-#define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
-#define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
-#define LogInfo(message, ...)  SdkLog("[INFO]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogError(message, ...) LOG_WITH_FUNC("[ERROR] ", message, ##__VA_ARGS__)
+#define LogWarn(message, ...) LOG_WITH_FUNC("[WARN]  ", message, ##__VA_ARGS__)
+#define LogInfo(message, ...) LOG_WITH_FUNC("[INFO]  ", message, ##__VA_ARGS__)
 #define LogDebug(message, ...)
 
 #elif LOGGING_TOP_LOG_LEVEL == LOG_WARN
 /* Only WARNING and ERROR messages will be logged.*/
-#define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
-#define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogError(message, ...) LOG_WITH_FUNC("[ERROR] ", message, ##__VA_ARGS__)
+#define LogWarn(message, ...) LOG_WITH_FUNC("[WARN]  ", message, ##__VA_ARGS__)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)
 
 #elif LOGGING_TOP_LOG_LEVEL == LOG_ERROR
 /* Only ERROR messages will be logged. */
-#define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogError(message, ...) LOG_WITH_FUNC("[ERROR] ", message, ##__VA_ARGS__)
 #define LogWarn(message, ...)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)

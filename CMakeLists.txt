@@ -17,8 +17,8 @@ add_compile_options(
 # Global logging configuration - common settings
 add_compile_definitions(
     # File path options (choose one or leave commented for no file info):
-    # LOGGING_PRINT_FILE_PATH           # Full file path (compile-time safe)
     # LOGGING_DISABLED_GLOBALLY
+    # LOGGING_PRINT_FILE_PATH           # Full file path (compile-time safe)
     
     # Function name support (optional - requires C99+ __func__ support)
     # LOGGING_PRINT_FUNCTION_NAME       # Add function names to log messages

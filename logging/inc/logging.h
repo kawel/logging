@@ -1,7 +1,9 @@
 /*
- * Copyright 2025 Merit Automotive Electronic Systems S.L.U., All rights reserved
- * It is not allowed to reproduce or utilize parts of this document in any form or by any means, including
- * photocopying and microfilm, without permission in written by Merit Automotive Electronic Systems.
+ * @file: logging.h
+ * @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
+ * -----
+ * Copyright 2025 - KElectronics
+ * -----
  */
 
 #ifndef LOGGING_H
@@ -12,6 +14,8 @@
 #include "logging_levels.h"
 #include "logging_stack.h"
 
+#define LOGGING_VERSION "1.1.0"
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -20,6 +24,7 @@ extern "C"
     typedef int (*Logging_Function_t)(const char *message, ...);
 
     void Logging_Init(Logging_Function_t log_func);
+    const char *Logging_GetVersion(void);
 
 #ifdef __cplusplus
 }
