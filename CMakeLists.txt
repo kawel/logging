@@ -21,7 +21,7 @@ add_compile_definitions(
     LIBRARY_PRINT_FILENAME_ONLY        # Just filename without path
     
     # Function name support (optional)
-    LIBRARY_PRINT_FUNCTION_NAME        # Add function names to log messages
+    # LIBRARY_PRINT_FUNCTION_NAME        # Add function names to log messages
     
     LIBRARY_LOG_LEVEL=LOG_DEBUG         # Project-wide default
 )

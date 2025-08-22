@@ -38,7 +38,7 @@
 
 #define LOGGING_STRINGIZE(x) LOGGING_STRINGIZE2(x)
 #define LOGGING_STRINGIZE2(x) #x
-#define LOGGING_LINE_STRING LOGGING_STRINGIZE(__LINE__)
+#define LINE_STRING LOGGING_STRINGIZE(__LINE__)
 
 /* Macro to extract just the filename from __FILE__ */
 #ifdef _WIN32
@@ -65,39 +65,27 @@
 
 #ifdef LIBRARY_LOG_NAME
     #ifdef LIBRARY_PRINT_FILE_PATH
-        #define LIBRARY_FILE_PATH __FILE__
-        #define LIBRARY_LOG_NAME_ LIBRARY_LOG_NAME
-        #define LIBRARY_FILE_LINE_NUMBER ":" LOGGING_LINE_STRING " "
+        #define LOG_PREFIX "[" LIBRARY_LOG_NAME "] (" __FILE__ ") "
     #elif defined(LIBRARY_PRINT_FILENAME_ONLY)
-        #define LIBRARY_FILE_PATH LOGGING_FILENAME
-        #define LIBRARY_LOG_NAME_ LIBRARY_LOG_NAME
-        #define LIBRARY_FILE_LINE_NUMBER ":" LOGGING_LINE_STRING " "
+        #define LOG_PREFIX "[" LIBRARY_LOG_NAME "] (" LOGGING_FILENAME ") "
     #else
-        #define LIBRARY_FILE_PATH ""
-        #define LIBRARY_LOG_NAME_ LIBRARY_LOG_NAME
-        #define LIBRARY_FILE_LINE_NUMBER ":" LOGGING_LINE_STRING " "
+        #define LOG_PREFIX "[" LIBRARY_LOG_NAME "] "
     #endif
 #else
     #ifdef LIBRARY_PRINT_FILE_PATH
-        #define LIBRARY_FILE_PATH __FILE__
-        #define LIBRARY_LOG_NAME_ ""
-        #define LIBRARY_FILE_LINE_NUMBER ":" LOGGING_LINE_STRING " "
+        #define LOG_PREFIX "(" __FILE__ ") "
     #elif defined(LIBRARY_PRINT_FILENAME_ONLY)
-        #define LIBRARY_FILE_PATH LOGGING_FILENAME
-        #define LIBRARY_LOG_NAME_ ""
-        #define LIBRARY_FILE_LINE_NUMBER ":" LOGGING_LINE_STRING " "
+        #define LOG_PREFIX "(" LOGGING_FILENAME ") "
     #else
-        #define LIBRARY_FILE_PATH ""
-        #define LIBRARY_LOG_NAME_ ""
-        #define LIBRARY_FILE_LINE_NUMBER "Line:" LOGGING_LINE_STRING " "
+        #define LOG_PREFIX ""
     #endif
 #endif
 
-/* Function name support */
+/* Function name support - optional for embedded systems */
 #ifdef LIBRARY_PRINT_FUNCTION_NAME
-    #define LIBRARY_FUNCTION_NAME , __func__
+    #define FUNCTION_SUFFIX "(" __func__ "):" LOGGING_LINE_STRING " - "
 #else
-    #define LIBRARY_FUNCTION_NAME
+    #define FUNCTION_SUFFIX ":" LOGGING_LINE_STRING " - "
 #endif
 
 extern int (*log_function)(const char *message, ...);
@@ -131,28 +119,28 @@ extern int (*log_function)(const char *message, ...);
 #else
 #if LIBRARY_LOG_LEVEL == LOG_DEBUG
 /* All log level messages will logged. */
-#define LogError(message, ...) SdkLog(("[ERROR] %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
-#define LogWarn(message, ...) SdkLog(("[WARN]  %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
-#define LogInfo(message, ...) SdkLog(("[INFO]  %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
-#define LogDebug(message, ...) SdkLog(("[DEBUG] %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog("[ERROR] " FILE_FMT FUNCTION_FMT ":%s - " message "\r\n" FILE_ARGS FUNCTION_ARG, LINE_STRING, ##__VA_ARGS__)
+#define LogWarn(message, ...)  SdkLog("[WARN]  " FILE_FMT FUNCTION_FMT ":%s - " message "\r\n" FILE_ARGS FUNCTION_ARG, LINE_STRING, ##__VA_ARGS__)
+#define LogInfo(message, ...)  SdkLog("[INFO]  " FILE_FMT FUNCTION_FMT ":%s - " message "\r\n" FILE_ARGS FUNCTION_ARG, LINE_STRING, ##__VA_ARGS__)
+#define LogDebug(message, ...) SdkLog("[DEBUG] " FILE_FMT FUNCTION_FMT ":%s - " message "\r\n" FILE_ARGS FUNCTION_ARG, LINE_STRING, ##__VA_ARGS__)
 
 #elif LIBRARY_LOG_LEVEL == LOG_INFO
 /* Only INFO, WARNING and ERROR messages will be logged. */
-#define LogError(message, ...) SdkLog(("[ERROR] %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
-#define LogWarn(message, ...) SdkLog(("[WARN]  %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
-#define LogInfo(message, ...) SdkLog(("[INFO]  %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
-#define LogDebug(message, ...)
+#define LogError(message, ...) SdkLog("[ERROR] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogWarn(message, ...)  SdkLog("[WARN]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogInfo(message, ...)  SdkLog("[INFO]  " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
+#define LogDebug(message, ...) SdkLog("[DEBUG] " LOG_PREFIX FUNCTION_SUFFIX message "\r\n", ##__VA_ARGS__)
 
 #elif LIBRARY_LOG_LEVEL == LOG_WARN
 /* Only WARNING and ERROR messages will be logged.*/
-#define LogError(message, ...) SdkLog(("[ERROR] %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
-#define LogWarn(message, ...) SdkLog(("[WARN]  %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog("[ERROR] " FILE_FMT FUNCTION_FMT ":%s " message "\r\n" FILE_ARGS FUNCTION_ARG, LINE_STRING, ##__VA_ARGS__)
+#define LogWarn(message, ...)  SdkLog("[WARN]  " FILE_FMT FUNCTION_FMT ":%s " message "\r\n" FILE_ARGS FUNCTION_ARG, LINE_STRING, ##__VA_ARGS__)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)
 
 #elif LIBRARY_LOG_LEVEL == LOG_ERROR
 /* Only ERROR messages will be logged. */
-#define LogError(message, ...) SdkLog(("[ERROR] %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog("[ERROR] " FILE_FMT FUNCTION_FMT ":%s " message "\r\n" FILE_ARGS FUNCTION_ARG, LINE_STRING, ##__VA_ARGS__)
 #define LogWarn(message, ...)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)
