@@ -1,5 +1,6 @@
 {
     "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
-        "llvm-header-guard"
+        "llvm-header-guard",
+        "misc-include-cleaner"
     ]
 }
