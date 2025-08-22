@@ -16,9 +16,14 @@ add_compile_options(
 
 # Global logging configuration - common settings
 add_compile_definitions(
-    # DISABLE_LOGGING
-    # LIBRARY_PRINT_FILE_PATH
-    LIBRARY_LOG_LEVEL=LOG_WARN    # Project-wide default
+    # Choose one of the following file path options:
+    # LIBRARY_PRINT_FILE_PATH          # Full file path
+    LIBRARY_PRINT_FILENAME_ONLY        # Just filename without path
+    
+    # Function name support (optional)
+    LIBRARY_PRINT_FUNCTION_NAME        # Add function names to log messages
+    
+    LIBRARY_LOG_LEVEL=LOG_DEBUG         # Project-wide default
 )
 
 # Add subdirectories in dependency order

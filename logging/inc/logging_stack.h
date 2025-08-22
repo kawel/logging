@@ -34,10 +34,18 @@
 /* Standard Include. */
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
-#define __STRINGIZE(x) __STRINGIZE2(x)
-#define __STRINGIZE2(x) #x
-#define __LINE_STRING __STRINGIZE(__LINE__)
+#define LOGGING_STRINGIZE(x) LOGGING_STRINGIZE2(x)
+#define LOGGING_STRINGIZE2(x) #x
+#define LOGGING_LINE_STRING LOGGING_STRINGIZE(__LINE__)
+
+/* Macro to extract just the filename from __FILE__ */
+#ifdef _WIN32
+    #define LOGGING_FILENAME (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+#else
+    #define LOGGING_FILENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#endif
 
 /**
  * @brief The name of the library or demo to add as metadata in log messages
@@ -56,25 +64,40 @@
 #endif
 
 #ifdef LIBRARY_LOG_NAME
-#ifdef LIBRARY_PRINT_FILE_PATH
-#define LIBRARY_FILE_PATH __FILE__
-#define LIBRARY_LOG_NAME_ " " LIBRARY_LOG_NAME
-#define LIBRARY_FILE_LINE_NUMBER ":" __LINE_STRING " "
+    #ifdef LIBRARY_PRINT_FILE_PATH
+        #define LIBRARY_FILE_PATH __FILE__
+        #define LIBRARY_LOG_NAME_ LIBRARY_LOG_NAME
+        #define LIBRARY_FILE_LINE_NUMBER ":" LOGGING_LINE_STRING " "
+    #elif defined(LIBRARY_PRINT_FILENAME_ONLY)
+        #define LIBRARY_FILE_PATH LOGGING_FILENAME
+        #define LIBRARY_LOG_NAME_ LIBRARY_LOG_NAME
+        #define LIBRARY_FILE_LINE_NUMBER ":" LOGGING_LINE_STRING " "
+    #else
+        #define LIBRARY_FILE_PATH ""
+        #define LIBRARY_LOG_NAME_ LIBRARY_LOG_NAME
+        #define LIBRARY_FILE_LINE_NUMBER ":" LOGGING_LINE_STRING " "
+    #endif
 #else
-#define LIBRARY_FILE_PATH
-#define LIBRARY_LOG_NAME_ LIBRARY_LOG_NAME FILE_NAME
-#define LIBRARY_FILE_LINE_NUMBER ":" __LINE_STRING " "
+    #ifdef LIBRARY_PRINT_FILE_PATH
+        #define LIBRARY_FILE_PATH __FILE__
+        #define LIBRARY_LOG_NAME_ ""
+        #define LIBRARY_FILE_LINE_NUMBER ":" LOGGING_LINE_STRING " "
+    #elif defined(LIBRARY_PRINT_FILENAME_ONLY)
+        #define LIBRARY_FILE_PATH LOGGING_FILENAME
+        #define LIBRARY_LOG_NAME_ ""
+        #define LIBRARY_FILE_LINE_NUMBER ":" LOGGING_LINE_STRING " "
+    #else
+        #define LIBRARY_FILE_PATH ""
+        #define LIBRARY_LOG_NAME_ ""
+        #define LIBRARY_FILE_LINE_NUMBER "Line:" LOGGING_LINE_STRING " "
+    #endif
 #endif
+
+/* Function name support */
+#ifdef LIBRARY_PRINT_FUNCTION_NAME
+    #define LIBRARY_FUNCTION_NAME , __func__
 #else
-#ifdef LIBRARY_PRINT_FILE_PATH
-#define LIBRARY_FILE_PATH __FILE__
-#define LIBRARY_LOG_NAME_
-#define LIBRARY_FILE_LINE_NUMBER ":" __LINE_STRING " "
-#else
-#define LIBRARY_FILE_PATH
-#define LIBRARY_LOG_NAME_
-#define LIBRARY_FILE_LINE_NUMBER "Line:" __LINE_STRING " "
-#endif
+    #define LIBRARY_FUNCTION_NAME
 #endif
 
 extern int (*log_function)(const char *message, ...);
@@ -108,28 +131,28 @@ extern int (*log_function)(const char *message, ...);
 #else
 #if LIBRARY_LOG_LEVEL == LOG_DEBUG
 /* All log level messages will logged. */
-#define LogError(message, ...) SdkLog(("[ERROR] " LIBRARY_FILE_PATH LIBRARY_LOG_NAME_ LIBRARY_FILE_LINE_NUMBER message "\r\n"), ##__VA_ARGS__)
-#define LogWarn(message, ...) SdkLog(("[WARN]  " LIBRARY_FILE_PATH LIBRARY_LOG_NAME_ LIBRARY_FILE_LINE_NUMBER message "\r\n"), ##__VA_ARGS__)
-#define LogInfo(message, ...) SdkLog(("[INFO]  " LIBRARY_FILE_PATH LIBRARY_LOG_NAME_ LIBRARY_FILE_LINE_NUMBER message "\r\n"), ##__VA_ARGS__)
-#define LogDebug(message, ...) SdkLog(("[DEBUG] " LIBRARY_FILE_PATH LIBRARY_LOG_NAME_ LIBRARY_FILE_LINE_NUMBER message "\r\n"), ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog(("[ERROR] %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
+#define LogWarn(message, ...) SdkLog(("[WARN]  %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
+#define LogInfo(message, ...) SdkLog(("[INFO]  %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
+#define LogDebug(message, ...) SdkLog(("[DEBUG] %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
 
 #elif LIBRARY_LOG_LEVEL == LOG_INFO
 /* Only INFO, WARNING and ERROR messages will be logged. */
-#define LogError(message, ...) SdkLog(("[ERROR] " LIBRARY_FILE_PATH LIBRARY_LOG_NAME_ LIBRARY_FILE_LINE_NUMBER message "\r\n"), ##__VA_ARGS__)
-#define LogWarn(message, ...) SdkLog(("[WARN]  " LIBRARY_FILE_PATH LIBRARY_LOG_NAME_ LIBRARY_FILE_LINE_NUMBER message "\r\n"), ##__VA_ARGS__)
-#define LogInfo(message, ...) SdkLog(("[INFO]  " LIBRARY_FILE_PATH LIBRARY_LOG_NAME_ LIBRARY_FILE_LINE_NUMBER message "\r\n"), ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog(("[ERROR] %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
+#define LogWarn(message, ...) SdkLog(("[WARN]  %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
+#define LogInfo(message, ...) SdkLog(("[INFO]  %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
 #define LogDebug(message, ...)
 
 #elif LIBRARY_LOG_LEVEL == LOG_WARN
 /* Only WARNING and ERROR messages will be logged.*/
-#define LogError(message, ...) SdkLog(("[ERROR] " LIBRARY_FILE_PATH LIBRARY_LOG_NAME_ LIBRARY_FILE_LINE_NUMBER message "\r\n"), ##__VA_ARGS__)
-#define LogWarn(message, ...) SdkLog(("[WARN]  " LIBRARY_FILE_PATH LIBRARY_LOG_NAME_ LIBRARY_FILE_LINE_NUMBER message "\r\n"), ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog(("[ERROR] %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
+#define LogWarn(message, ...) SdkLog(("[WARN]  %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)
 
 #elif LIBRARY_LOG_LEVEL == LOG_ERROR
 /* Only ERROR messages will be logged. */
-#define LogError(message, ...) SdkLog(("[ERROR] " LIBRARY_FILE_PATH LIBRARY_LOG_NAME LIBRARY_FILE_LINE_NUMBER message "\r\n"), ##__VA_ARGS__)
+#define LogError(message, ...) SdkLog(("[ERROR] %s %s %s%s: " message "\r\n"), LIBRARY_FILE_PATH, LIBRARY_LOG_NAME_, LIBRARY_FILE_LINE_NUMBER LIBRARY_FUNCTION_NAME, ##__VA_ARGS__)
 #define LogWarn(message, ...)
 #define LogInfo(message, ...)
 #define LogDebug(message, ...)
