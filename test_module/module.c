@@ -1,4 +1,3 @@
-// test application to make use of the logging library
 #include <stdarg.h>
 
 #include <stdio.h>
@@ -6,7 +5,6 @@
 
 #include "logging.h"
 
-// define logging function
 static int custom_log_function(const char *message, ...)
 {
     va_list args;
@@ -18,10 +16,10 @@ static int custom_log_function(const char *message, ...)
     return 0;
 }
 
-int main(void)
+void testfunction(void)
 {
     Logging_Init(LOG_DEBUG, custom_log_function);
-
+    // Test function implementation
     LogInfo("This is an info message");
     LogError("This is an error message");
     LogWarn("This is a warning message with some details %s", "additional info");
@@ -29,5 +27,4 @@ int main(void)
     LogDebug("This is a debug message with float: %f", 3.14);
     LogDebug("This is a debug message with hex: 0x%x", 0xDEAD);
 
-    return 0;
 }

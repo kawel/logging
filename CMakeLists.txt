@@ -1,15 +1,6 @@
 cmake_minimum_required(VERSION 3.25.0)
 
-project(logging_test)
-
-add_executable(${PROJECT_NAME})
-
-target_sources(${PROJECT_NAME}
-    PRIVATE
-        test/test.c
-)
-
-
+project(logging_test_TOP)
 
 # Alternative approach - target-specific definitions
 # target_compile_definitions(logging
@@ -19,31 +10,26 @@ target_sources(${PROJECT_NAME}
 #         LIBRARY_PRINT_FILE_PATH
 # )
 
-target_compile_definitions(${PROJECT_NAME}
-    PRIVATE
-        LIBRARY_LOG_LEVEL=LOG_WARN
-        LIBRARY_LOG_NAME="LOGGING_TEST"
-        LIBRARY_PRINT_FILE_PATH
-)
+# target_compile_definitions(${PROJECT_NAME}
+#     PRIVATE
+#         LIBRARY_LOG_LEVEL=LOG_WARN
+#         LIBRARY_LOG_NAME="[Logging app top]"
+#         LIBRARY_PRINT_FILE_PATH
+# )
 
-target_include_directories(${PROJECT_NAME}
-    PRIVATE
-        logging/inc
-)
+# target_include_directories(${PROJECT_NAME}
+#     PRIVATE
+#         logging/inc
+# )
 
-target_compile_options(${PROJECT_NAME}
-    PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Werror
-)
-
-target_link_libraries(${PROJECT_NAME}
-    PRIVATE
-        logging
-)
+# target_compile_options(${PROJECT_NAME}
+#     PRIVATE
+#         -Wall
+#         -Wextra
+#         -Wpedantic
+#         -Werror
+# )
 
 add_subdirectory(logging)
-
-# czy to jest włąściwa struktura cmakelists
+add_subdirectory(test)
+# add_subdirectory(test_module)
