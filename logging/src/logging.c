@@ -11,7 +11,7 @@
 #include "logging_levels.h"
 
 int (*log_function)(const char *message, ...) = NULL;
-static int logging_level = LOG_NONE;
+static int current_logging_level = LOG_NONE;
 
 static int default_log_function(const char *message, ...)
 {
@@ -33,10 +33,10 @@ void Logging_Init( int logging_level,  Logging_Function_t log_func )
 
     if (logging_level <= LOG_DEBUG)
     {
-        logging_level = logging_level;
+        current_logging_level = logging_level;
     }
     else
     {
-        logging_level = LOG_DEBUG;
+        current_logging_level = LOG_DEBUG;
     }
 }

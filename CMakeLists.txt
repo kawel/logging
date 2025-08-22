@@ -1,35 +1,26 @@
 cmake_minimum_required(VERSION 3.25.0)
 
-project(logging_test_TOP)
+project(logging_test_TOP VERSION 1.0.0 LANGUAGES C)
 
-# Alternative approach - target-specific definitions
-# target_compile_definitions(logging
-#     PRIVATE
-#         LIBRARY_LOG_LEVEL=LOG_INFO
-#         LIBRARY_LOG_NAME="LOGGING_LIB"
-#         LIBRARY_PRINT_FILE_PATH
-# )
+# Global project settings
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# target_compile_definitions(${PROJECT_NAME}
-#     PRIVATE
-#         LIBRARY_LOG_LEVEL=LOG_WARN
-#         LIBRARY_LOG_NAME="[Logging app top]"
-#         LIBRARY_PRINT_FILE_PATH
-# )
+# Global compile options (applied to all targets)
+add_compile_options(
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Werror
+)
 
-# target_include_directories(${PROJECT_NAME}
-#     PRIVATE
-#         logging/inc
-# )
+# Global logging configuration - common settings
+add_compile_definitions(
+    LIBRARY_PRINT_FILE_PATH
+    LIBRARY_LOG_LEVEL=LOG_DEBUG    # Project-wide default
+)
 
-# target_compile_options(${PROJECT_NAME}
-#     PRIVATE
-#         -Wall
-#         -Wextra
-#         -Wpedantic
-#         -Werror
-# )
-
-add_subdirectory(logging)
-add_subdirectory(test)
+# Add subdirectories in dependency order
+add_subdirectory(logging)    # Library first (dependency)
+add_subdirectory(test)       # Then applications that use it
 # add_subdirectory(test_module)
