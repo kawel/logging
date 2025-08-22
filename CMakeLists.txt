@@ -21,7 +21,7 @@ add_compile_definitions(
     # LOGGING_PRINT_FILE_PATH           # Full file path (compile-time safe)
     
     # Function name support (optional - requires C99+ __func__ support)
-    # LOGGING_PRINT_FUNCTION_NAME       # Add function names to log messages
+    LOGGING_PRINT_FUNCTION_NAME       # Add function names to log messages
     
     LOGGING_TOP_LOG_LEVEL=LOG_DEBUG         # Project-wide default
 )

@@ -1,5 +1,5 @@
 /**
- * @file: com.c
+ * @file: logging.c
  * @author:: Paweł Kawula (pawel.kawula@kelectronics.pl)
  * -----
  * Copyright 2025 - KElectronics

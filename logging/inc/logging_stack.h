@@ -1,28 +1,12 @@
-/*
- * FreeRTOS V202104.00
- * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * http://www.FreeRTOS.org
- * http://aws.amazon.com/freertos
- *
- * 1 tab == 4 spaces!
+/**
+ * @file: logging_stack.h  
+ * @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
+ * @brief: High-performance embedded logging system with compile-time optimization
+ * -----
+ * Copyright 2025 - KElectronics
+ * -----
+ * @note: Core logging concepts inspired by FreeRTOS logging framework,
+ *        but implementation completely rewritten for embedded performance
  */
 
 #ifndef LOGGING_STACK_H
@@ -31,23 +15,9 @@
 /* Include header for logging level macros. */
 #include "logging_levels.h"
 
-/* Standard Include. */
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-
 #define LOGGING_STRINGIZE(x) LOGGING_STRINGIZE2(x)
 #define LOGGING_STRINGIZE2(x) #x
 #define LOGGING_LINE_STRING LOGGING_STRINGIZE(__LINE__)
-
-/* Macro to extract just the filename from __FILE__ - NOT USED in pure compile-time approach
- * Kept for reference but removed from implementation for maximum embedded performance
- */
-#ifdef _WIN32
-#define LOGGING_FILENAME (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
-#else
-#define LOGGING_FILENAME (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
-#endif
 
 /**
  * @brief The name of the library or demo to add as metadata in log messages
