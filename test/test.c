@@ -1,11 +1,10 @@
 // test application to make use of the logging library
-#include <string.h>
-#include <stdio.h>
 #include <stdarg.h>
 
+#include <stdio.h>
+#include <string.h>
+
 #include "logging.h"
-#include "logging_levels.h"
-#include "logging_stack.h"
 
 // define logging function
 static int custom_log_function(const char *message, ...)

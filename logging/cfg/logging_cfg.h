@@ -16,9 +16,10 @@
 \*===================================================================================================================*/
 
 // #define DISABLE_LOGGING // Disable all logging
-#define LIBRARY_PRINT_FILE_PATH
-#define LIBRARY_LOG_LEVEL LOG_DEBUG
-#define LIBRARY_LOG_NAME "LOGGING_LIB"
+// Configuration is now handled by CMake definitions:
+// - LIBRARY_LOG_LEVEL
+// - LIBRARY_LOG_NAME  
+// - LIBRARY_PRINT_FILE_PATH
 /*===================================================================================================================*\
   Exported type declarations (enum, struct, union, typedef)
 \*===================================================================================================================*/
