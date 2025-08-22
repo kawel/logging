@@ -9,7 +9,7 @@ static int custom_log_function(const char *message, ...)
 {
     va_list args;
     va_start(args, message);
-
+    printf("Module Log: ");
     vprintf(message, args);
     
     va_end(args);
@@ -20,6 +20,8 @@ void testfunction(void)
 {
     Logging_Init(LOG_DEBUG, custom_log_function);
     // Test function implementation
+
+    printf("Module Test Log:\n");
     LogInfo("This is an info message");
     LogError("This is an error message");
     LogWarn("This is a warning message with some details %s", "additional info");

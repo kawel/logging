@@ -14,6 +14,7 @@ target_sources(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         logging
+        test_module
 )
 
 # Application-specific logging configuration
@@ -21,5 +22,3 @@ target_compile_definitions(${PROJECT_NAME}
     PRIVATE
         LIBRARY_LOG_NAME="[TEST_APP]"   # Custom name for test app
 )
-
-# add_subdirectory(../logging)

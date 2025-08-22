@@ -16,11 +16,12 @@ add_compile_options(
 
 # Global logging configuration - common settings
 add_compile_definitions(
-    LIBRARY_PRINT_FILE_PATH
-    LIBRARY_LOG_LEVEL=LOG_DEBUG    # Project-wide default
+    # DISABLE_LOGGING
+    # LIBRARY_PRINT_FILE_PATH
+    LIBRARY_LOG_LEVEL=LOG_WARN    # Project-wide default
 )
 
 # Add subdirectories in dependency order
-add_subdirectory(logging)    # Library first (dependency)
-add_subdirectory(test)       # Then applications that use it
-# add_subdirectory(test_module)
+add_subdirectory(logging)
+add_subdirectory(test_module)
+add_subdirectory(test_main)

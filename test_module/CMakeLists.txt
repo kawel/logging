@@ -1,41 +1,29 @@
 cmake_minimum_required(VERSION 3.25.0)
 
-project(test_main)
+project(test_module)
 
-add_executable(${PROJECT_NAME})
+# Create the test executable
+add_library(${PROJECT_NAME} STATIC)
 
 target_sources(${PROJECT_NAME}
     PRIVATE
-        test/test.c
-)
-
-target_compile_definitions(${PROJECT_NAME}
-    PRIVATE
-        LIBRARY_LOG_LEVEL=LOG_WARN
-        LIBRARY_LOG_NAME="[test main]"
-        LIBRARY_PRINT_FILE_PATH
+        src/module.c
 )
 
 target_include_directories(${PROJECT_NAME}
-    PRIVATE
-        logging/inc
+    PUBLIC
+        inc
 )
 
-target_compile_options(${PROJECT_NAME}
-    PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Werror
-)
-
+# Link to the logging library (gets its PUBLIC interface automatically)
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
         logging
 )
 
-add_subdirectory(logging)
-add_subdirectory(test)
-add_subdirectory(test_module)
-
-
+# Application-specific logging configuration
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+        LIBRARY_LOG_NAME="[TEST_MODULE]"   # Custom name for test module
+        # LIBRARY_LOG_LEVEL=LOG_INFO       # Custom log level for test module
+)
