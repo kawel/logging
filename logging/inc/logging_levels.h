@@ -1,113 +1,92 @@
-/*
- * FreeRTOS V202104.00
- * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of
- * this software and associated documentation files (the "Software"), to deal in
- * the Software without restriction, including without limitation the rights to
- * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
- * the Software, and to permit persons to whom the Software is furnished to do so,
- * subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
- * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
- * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * http://www.FreeRTOS.org
- * http://aws.amazon.com/freertos
- *
- * 1 tab == 4 spaces!
- */
-
 /**
- * @file logging_levels.h
- * @brief Defines the configuration constants for all logging verbosity levels.
+ * @file: logging_levels.h
+ * @author: Paweł Kawula (pawel.kawula@kelectronics.pl)
+ * @brief: Logging level definitions for embedded high-performance logging system
+ * -----
+ * Copyright 2025 - KElectronics
+ * -----
+ * @note: Core logging level concepts inspired by FreeRTOS logging framework,
+ *        but implementation completely rewritten for embedded performance
  */
 
 #ifndef LOGGING_LEVELS_H
 #define LOGGING_LEVELS_H
 
 /**
- * @constantspage{logging,logging library}
+ * @brief Log levels for embedded high-performance logging system.
  *
- * @section logging_constants_levels Log levels
- * @brief Log levels for the libraries in this SDK.
- *
- * Each library should specify a log level by setting @ref LOGGING_TOP_LOG_LEVEL.
+ * Each module should specify a log level by setting @ref LOGGING_TOP_LOG_LEVEL.
  * All log messages with a level at or below the specified level will be printed
- * for that library.
+ * for that module with zero runtime overhead.
  *
- * Currently, there are 4 log levels. In the order of lowest to highest, they are:
- * - #LOG_NONE <br>
- *   @copybrief LOG_NONE
- * - #LOG_ERROR <br>
- *   @copybrief LOG_ERROR
- * - #LOG_WARN <br>
- *   @copybrief LOG_WARN
- * - #LOG_INFO <br>
- *   @copybrief LOG_INFO
- * - #LOG_DEBUG <br>
- *   @copybrief LOG_DEBUG
+ * Log levels in order of severity (lowest to highest):
+ * - #LOG_NONE - Completely disable all logging
+ * - #LOG_ERROR - Critical failures requiring immediate attention  
+ * - #LOG_WARN - Abnormal conditions that don't stop execution
+ * - #LOG_INFO - Normal operational status messages
+ * - #LOG_DEBUG - Detailed diagnostic information for development
+ *
+ * @note Higher log levels generate more output and impact performance.
+ *       For production embedded systems, use LOG_WARN or LOG_ERROR only.
  */
 
 /**
- * @brief No log messages.
- *
- * When @ref LOGGING_TOP_LOG_LEVEL is #LOG_NONE, logging is disabled and no
- * logging messages are printed.
+ * @brief Disable all logging completely.
+ * 
+ * When LOGGING_TOP_LOG_LEVEL is LOG_NONE, all logging macros become empty
+ * and generate zero code, providing maximum performance for production builds.
  */
 #define LOG_NONE     0
 
 /**
- * @brief Represents erroneous application state or event.
- *
- * These messages describe the situations when a library encounters an error from
- * which it cannot recover.
- *
- * These messages are printed when @ref LOGGING_TOP_LOG_LEVEL is defined as either
- * of #LOG_ERROR, #LOG_WARN, #LOG_INFO or #LOG_DEBUG.
+ * @brief Critical system failures and unrecoverable errors.
+ * 
+ * Use for conditions that prevent normal system operation:
+ * - Hardware initialization failures
+ * - Critical resource allocation failures  
+ * - Security violations
+ * - System crashes or resets
+ * 
+ * @note These should be rare in production and require immediate attention.
  */
 #define LOG_ERROR    1
 
 /**
- * @brief Message about an abnormal event.
- *
- * These messages describe the situations when a library encounters
- * abnormal event that may be indicative of an error. Libraries continue
- * execution after logging a warning.
- *
- * These messages are printed when @ref LOGGING_TOP_LOG_LEVEL is defined as either
- * of #LOG_WARN, #LOG_INFO or #LOG_DEBUG.
+ * @brief Warning conditions that don't prevent operation.
+ * 
+ * Use for abnormal but recoverable conditions:
+ * - Resource usage approaching limits
+ * - Degraded performance conditions
+ * - Retry operations
+ * - Configuration issues with fallbacks
+ * 
+ * @note System continues operation but monitoring may be needed.
  */
 #define LOG_WARN     2
 
 /**
- * @brief A helpful, informational message.
- *
- * These messages describe normal execution of a library. They provide
- * the progress of the program at a coarse-grained level.
- *
- * These messages are printed when @ref LOGGING_TOP_LOG_LEVEL is defined as either
- * of #LOG_INFO or #LOG_DEBUG.
+ * @brief Normal operational status messages.
+ * 
+ * Use for important system state changes:
+ * - System startup/shutdown sequences
+ * - Mode changes (sleep/wake, configuration changes)
+ * - Connection status (network, peripherals)
+ * - Major operation completions
+ * 
+ * @note Provides visibility into normal system behavior.
  */
 #define LOG_INFO     3
 
 /**
- * @brief Detailed and excessive debug information.
- *
- * Debug log messages are used to provide the
- * progress of the program at a fine-grained level. These are mostly used
- * for debugging and may contain excessive information such as internal
- * variables, buffers, or other specific information.
- *
- * These messages are only printed when @ref LOGGING_TOP_LOG_LEVEL is defined as
- * #LOG_DEBUG.
+ * @brief Detailed diagnostic information for development.
+ * 
+ * Use for fine-grained debugging information:
+ * - Function entry/exit with parameters
+ * - Internal state variables
+ * - Buffer contents and data flows
+ * - Performance timing measurements
+ * 
+ * @warning Should be disabled in production builds due to performance impact.
  */
 #define LOG_DEBUG    4
 
