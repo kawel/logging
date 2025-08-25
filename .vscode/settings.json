@@ -2,5 +2,6 @@
     "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
         "llvm-header-guard",
         "misc-include-cleaner"
-    ]
+    ],
+    "cmake.sourceDirectory": "/home/pkawula/projects/fatm/logging_lib"
 }

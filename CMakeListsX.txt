@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.25.0)
 
-# Logging library example project that is demonstrating the logging functionality
-# and how to use it within a project consisting of few modules.
-
 project(logging_lib_TOP VERSION 1.0.0 LANGUAGES C)
 
 # Global project settings
@@ -30,6 +27,6 @@ add_compile_definitions(
 )
 
 # Add subdirectories in dependency order
-add_subdirectory(logging)
-add_subdirectory(example/test_module)
-add_subdirectory(example/test_main)
+add_subdirectory(../logging)
+add_subdirectory(test_module)
+add_subdirectory(test_main)
