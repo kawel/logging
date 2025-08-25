@@ -1,24 +1,27 @@
+/**
+ * @file: logging.c
+ * @author:: Paweł Kawula (pawel.kawula@kelectronics.pl)
+ * -----
+ * Copyright 2025 - KElectronics
+ */
 
-/*
-* Copyright 2025 Merit Automotive Electronic Systems S.L.U., All rights reserved
-* It is not allowed to reproduce or utilize parts of this document in any form or by any means, including
-* photocopying and microfilm, without permission in written by Merit Automotive Electronic Systems.
-*/
+#include <stdarg.h>
+#include <stddef.h>
 
 #include "logging.h"
+#include "logging_levels.h"
 
-static Logging_Function_t log_function = NULL;
-static int logging_level = LOG_NONE;
+int (*log_function)(const char *message, ...) = NULL;
 
-static void default_log_function(const char *message, ...)
+static int default_log_function(const char *message, ...)
 {
-  (void)message;
-  (void)va_list;
+    (void)message;
+    return 0;
 }
 
-void Logging_Init( int logging_level,  Logging_Function_t log_func )
+void Logging_Init(Logging_Function_t log_func)
 {
-    if(log_func)
+    if (log_func)
     {
         log_function = log_func;
     }
@@ -26,13 +29,33 @@ void Logging_Init( int logging_level,  Logging_Function_t log_func )
     {
         log_function = default_log_function;
     }
+}
 
-    if (logging_level <= LOG_DEBUG)
+const char *Logging_GetVersion(void)
+{
+    return LOGGING_VERSION;
+}
+
+char * Logging_GetLoggingLevelName(int level)
+{
+    switch (level)
     {
-        logging_level = logging_level;
+        case LOG_NONE:
+            return "LOG_NONE";
+        case LOG_ERROR:
+            return "LOG_ERROR";
+        case LOG_WARN:
+            return "LOG_WARN";
+        case LOG_INFO:
+            return "LOG_INFO";
+        case LOG_DEBUG:
+            return "LOG_DEBUG";
+        default:
+            return "UNKNOWN_LEVEL";
     }
-    else
-    {
-        logging_level = LOG_DEBUG;
-    }
+}
+
+int Logging_GetTopLoggingLevel(void)
+{
+    return LOGGING_TOP_LOG_LEVEL;
 }
