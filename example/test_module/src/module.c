@@ -22,6 +22,8 @@ void testfunction(void)
     // Test function implementation
 
     printf("Module Test Log:\n");
+    printf("Top logging level: %s\n", Logging_GetLoggingLevelName(Logging_GetTopLoggingLevel()));
+
     LogInfo("This is an info message");
     LogError("This is an error message");
     LogWarn("This is a warning message with some details %s", "additional info");

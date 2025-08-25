@@ -35,3 +35,27 @@ const char *Logging_GetVersion(void)
 {
     return LOGGING_VERSION;
 }
+
+char * Logging_GetLoggingLevelName(int level)
+{
+    switch (level)
+    {
+        case LOG_NONE:
+            return "LOG_NONE";
+        case LOG_ERROR:
+            return "LOG_ERROR";
+        case LOG_WARN:
+            return "LOG_WARN";
+        case LOG_INFO:
+            return "LOG_INFO";
+        case LOG_DEBUG:
+            return "LOG_DEBUG";
+        default:
+            return "UNKNOWN_LEVEL";
+    }
+}
+
+int Logging_GetTopLoggingLevel(void)
+{
+    return LOGGING_TOP_LOG_LEVEL;
+}

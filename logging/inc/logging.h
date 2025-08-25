@@ -73,6 +73,41 @@ void Logging_Init(Logging_Function_t log_func);
  */
 const char *Logging_GetVersion(void);
 
+/**
+ * @brief Get the name of the logging level.
+ * 
+ * Returns a string representation of the logging level.
+ * 
+ * @param level The logging level to get the name for.
+ * @return char* String representation of the logging level.
+ * 
+ * @example
+ * @code
+ * printf("Current logging level: %s\n", Logging_GetLoggingLevelName(LOG_INFO));
+ * @endcode
+ */
+char *Logging_GetLoggingLevelName(int level);
+
+/**
+ * @brief Get the top logging level configured at compile time.
+ * 
+ * Returns the value of LOGGING_TOP_LOG_LEVEL which defines the highest
+ * logging level that will be compiled into the code. Log messages with
+ * a level above this will be completely omitted, resulting in zero
+ * runtime overhead.
+ * 
+ * @return int The top logging level (LOG_NONE, LOG_ERROR, LOG_WARN, LOG_INFO, or LOG_DEBUG).
+ * 
+ * @example
+ * @code
+ * int top_level = Logging_GetTopLoggingLevel();
+ * if (top_level >= LOG_DEBUG) {
+ *     LogDebug("Debug logging is enabled");
+ * }
+ * @endcode
+ */
+int Logging_GetTopLoggingLevel(void);
+
 #ifdef __cplusplus
 }
 #endif
