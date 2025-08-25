@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.25.0)
 
 project(logging VERSION 1.1.0)
 
-# Create the logging library
 add_library(${PROJECT_NAME} STATIC)
 
 target_sources(${PROJECT_NAME}

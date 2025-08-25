@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.25.0)
 # Logging library example project that is demonstrating the logging functionality
 # and how to use it within a project consisting of few modules.
 
-project(logging_lib_TOP VERSION 1.0.0 LANGUAGES C)
+project(logging_lib_TOP LANGUAGES C)
 
 # Global project settings
 set(CMAKE_C_STANDARD 99)
